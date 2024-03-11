@@ -2,10 +2,10 @@
 
 VERY EARLY / WIP nothing is implemented yet
 
-B6502S is a Basic (as in simple not the language) 6502 board Simulator. 
+B6502S is a Basic (as in simple not the language) 6502 SoC Simulator. 
 
 The goal of this project is to help me learn 6502 assembly and also to make a neat little 
-board Simulator (which is pretty cool I think). 
+SoC Simulator (which is pretty cool I think). 
 
 ATM the project is in it's very early stage. 
 I'm really busy bc of college so I probably won't make very fast progress. 
