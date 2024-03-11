@@ -4,7 +4,7 @@
 #include "common.h"
 #include "cpu.h"
 #include "memory.h"
-#include "stack.h"
+
 
 typedef struct s_keyboard KEYBOARD ; 
 typedef struct s_display DISPLAY ;

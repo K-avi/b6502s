@@ -15,8 +15,8 @@
 #define STACK_SIZE 0x0100
 
 
-#define ROM_FLAG 0x01
-#define RAM_FLAG 0x02
+#define ROM_MEM 0x01
+#define RAM_MEM 0x02
 
 typedef struct s_mem{
     byte *data ; 
@@ -27,9 +27,14 @@ typedef struct s_mem{
 typedef MEMORY ROM ; 
 typedef MEMORY RAM ;
 
-extern err_flag mem_init(MEMORY *mem, uint16_t size, uint8_t type);
+extern err_flag mem_init(MEMORY *mem, uint32_t size, uint8_t type);
 extern void mem_free(MEMORY *mem);
 
 extern byte mem_read(MEMORY *mem, uint16_t addr);
+
+#ifdef debug
+extern void mem_print(MEMORY *mem);
+extern void mem_load(MEMORY *mem, byte *data, uint32_t size);
+#endif
 
 #endif

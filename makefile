@@ -1,8 +1,8 @@
-TARGET := ../edgerunner
-DEBUG := ../edgerunner_dbg
+TARGET := b6502s
+DEBUG := b6502s_dbg
 
-TEST := ../test
-TEST_DBG := ../test_dbg
+TEST := test
+TEST_DBG := test_dbg
 
 CC := gcc
 
@@ -10,7 +10,7 @@ DEBUG_FLAGS := -g -fsanitize=address -fsanitize=object-size -fno-optimize-siblin
 CFLAGS := -O1 -g -std=gnu17 -Wall -Wextra -Wpedantic -Wno-unused-parameter 
 LDFLAGS := -lcurses
 
-SRCS := misc.c graph_base.c points.c graph_curses.c game.c entities.c ennemy.c search_utils.c player_ai.c
+SRCS := src/*.c
 
 all: $(TARGET)
 
@@ -20,8 +20,8 @@ $(DEBUG) :   $(SRCS) main.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $^ -o $(DEBUG) $(LDFLAGS)
 
 
-$(TEST): $(SRCS) main_test.c
+$(TEST): $(SRCS)  test.c
 	$(CC) $(CFLAGS) $^ -o $(TEST) $(LDFLAGS)
-$(TEST_DBG): $(SRCS) main_test.c
+$(TEST_DBG): $(SRCS) test.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $^ -o $(TEST) $(LDFLAGS)
 

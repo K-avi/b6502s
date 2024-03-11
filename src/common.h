@@ -18,6 +18,7 @@ enum {
 }; 
 
 
+#define debug
 #define META_DATA
 
 #endif 

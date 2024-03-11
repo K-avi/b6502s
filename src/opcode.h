@@ -296,5 +296,8 @@
 //Transfer Index Y to Accumulator
 #define TYA_IMP 0x98
 
+//Special opcode to indicate the end of the program
+#define META_DIE 0xFF 
+
 //FINALLY ITS OVER FFS 
 #endif 

@@ -13,6 +13,6 @@
 
 typedef void (*instruction_fn)(CPU*, MEMORY* ) ;
 
-extern void decode_instruction(CPU *cpu, MEMORY *mem, byte opcode) ;
+extern void exec_instruction(CPU *cpu, MEMORY *mem, byte opcode) ;
 
 #endif 

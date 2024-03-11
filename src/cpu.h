@@ -4,7 +4,6 @@
 #include "common.h"
 #include "memory.h"
 
-
 #define RESET_VECTOR_LOW 0xFFFC
 #define RESET_VECTOR_HIGH 0xFFFD
 
@@ -29,15 +28,18 @@ typedef struct s_reg{
     uint16_t pc; //program counter
     byte p; //processor status
 
-
     #ifdef META_DATA
+    uint8_t ended;
     uint64_t cycles; //number of cycles 
     #endif
 }CPU;
 
 extern err_flag cpu_init(CPU *cpu);
 extern err_flag cpu_reset(CPU *cpu, MEMORY *mem);
+extern err_flag cpu_start(CPU * cpu, MEMORY *mem);
 
-
+#ifdef debug 
+extern void print_cpu(CPU *cpu);
+#endif
 
 #endif
