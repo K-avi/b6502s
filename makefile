@@ -25,3 +25,6 @@ $(TEST): $(SRCS)  test.c
 $(TEST_DBG): $(SRCS) test.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $^ -o $(TEST) $(LDFLAGS)
 
+
+clean : 
+	rm -f $(TARGET) $(DEBUG) $(TEST) $(TEST_DBG)

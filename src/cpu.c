@@ -2,6 +2,7 @@
 #include "common.h"
 #include "decode.h"
 #include "memory.h"
+#include "opcode.h"
 #include <stdint.h>
 
 err_flag cpu_init(CPU *cpu)
@@ -45,6 +46,11 @@ uint8_t fetch_instruction(CPU *cpu, MEMORY *mem)
     return mem_read(mem, cpu->pc);
 }
 
+
+#ifdef debug 
+void print_cpu(CPU *cpu);
+#endif
+
 err_flag cpu_start(CPU * cpu, MEMORY *mem)
 {
     if (cpu == NULL || mem == NULL)
@@ -55,8 +61,29 @@ err_flag cpu_start(CPU * cpu, MEMORY *mem)
     #ifdef META_DATA
     while (!cpu->ended)
     {
+
+        
+        
         uint8_t instr = fetch_instruction(cpu, mem);  
+
+        #ifdef debug 
+        if(instr == ADC_XZI){
+        printf("before exec instruction %x " , instr);
+        printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
+        print_cpu(cpu);
+        }
+        #endif
+
+
         exec_instruction(cpu, mem, instr);
+
+        #ifdef debug 
+        if(instr == ADC_XZI){
+        printf("after exec instruction %x " , instr);
+        printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
+        print_cpu(cpu);
+        }
+        #endif
     }
     #else
     while (1)

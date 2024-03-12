@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "opcode.h"
 #include <stdint.h>
+#include <stdio.h>
 
 
 /******ADRESSING MODE FUNCTION **********/
@@ -95,12 +96,22 @@ static ADR_UTIL adressing_xzi(CPU* cpu, MEMORY* mem)
     //the intermediate adress is used to fetch 
     //an adress from the zero page which is then 
     //used to fetch the value to be added to the accumulator
-    uint16_t zp_adress = (interm_addr + cpu->x ) & ZP_START;
+    uint16_t zp_adress = (interm_addr + cpu->x ) ;
 
     uint8_t low = mem_read(mem, zp_adress);
     uint8_t high = mem_read(mem, zp_adress + 1);
 
+    #ifdef debug
+    /*printf("intemr_addr %d zp.adr = %d, cpu.x = %d \n", interm_addr, zp_adress, cpu->x);
+    printf("low = %d, high = %d\n", low, high);
+    printf("adr xzi low = %d, high = %d\n", low, high);*/
+    #endif
+
     uint16_t adress = (high << 8) | low;
+
+    #ifdef debug
+   // printf("adress = %d\n", adress);
+    #endif
 
     return (ADR_UTIL){adress, 2};
 }
@@ -131,7 +142,6 @@ static ADR_UTIL adressing_rel(CPU* cpu, MEMORY* mem)
     return (ADR_UTIL){cpu->pc + 2 + offset, 2}; 
     //+2 because the offset is relative to the next instruction
 }
-
 
 /*****************************************/
 /*******INSTRUCTION FUNCTIONS************/
@@ -173,8 +183,6 @@ static uint8_t generic_adc(CPU* cpu, uint8_t val1, uint8_t val2){
 no flag is tested yet
 */
 
-
-
 /******************************************/
 /*************OPCODE FUNCTIONS************/
 /****************************************/
@@ -197,6 +205,9 @@ static void fn_adc_ab(CPU *cpu, MEMORY *mem)
     ADR_UTIL adr = adressing_abs(cpu, mem);
     uint8_t value = mem_read(mem, adr.address);
 
+
+    //printf("adc ab : value = %d , adr = %d\n", value, adr.address);
+
     cpu->a = generic_adc(cpu, value, cpu->a);
     
     cpu->pc += adr.size;
@@ -207,9 +218,8 @@ static void fn_adc_ab(CPU *cpu, MEMORY *mem)
 
 static void fn_adc_xab(CPU *cpu, MEMORY *mem)
 {
-   ADR_UTIL adr = adressing_xab(cpu, mem);
-
-   uint8_t value = mem_read(mem, adr.address);
+    ADR_UTIL adr = adressing_xab(cpu, mem);
+    uint8_t value = mem_read(mem, adr.address);
 
     cpu->a = generic_adc(cpu, value, cpu->a);
     
