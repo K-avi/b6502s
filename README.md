@@ -1,5 +1,13 @@
 ## B6502S 
 
+todo : 
+    
+    - implement proper error handling
+    - I *could* use macro to create the opcode functions but I think 
+      it's a bad idea 
+    - I *should* however prolly use a single function to set flags and 
+      make the code somewhat less boilerplaty
+
 VERY EARLY / WIP nothing is implemented yet
 
 B6502S is a Basic (as in simple not the language) 6502 SoC Simulator. 

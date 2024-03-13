@@ -7,18 +7,17 @@
 #define RESET_VECTOR_LOW 0xFFFC
 #define RESET_VECTOR_HIGH 0xFFFD
 
-#define FCARRY 1<<0 
-#define FZERO 1<<1
-#define FINTERRUPT_DISABLE 1<<2
+#define FCARRY (1<<0) 
+#define FZERO (1<<1)
+#define FINTERRUPT_DISABLE (1<<2)
 
-#define FDECIMAL_MODE 1<<3
+#define FDECIMAL_MODE (1<<3)
 #define FDECIMAL FDECIMAL_MODE
 
-#define FBREAK 1<<4
-#define FUNUSED 1<<5
-#define FOVERFLOW 1<<6
-#define FNEGATIVE 1<<7
-
+#define FBREAK (1<<4)
+#define FUNUSED (1<<5)
+#define FOVERFLOW (1<<6)
+#define FNEGATIVE (1<<7)
 
 typedef struct s_reg{
     byte a; //accumulator

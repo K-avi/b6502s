@@ -43,6 +43,16 @@ byte mem_read(MEMORY *mem, uint16_t address)
     return mem->data[address] ;
 }//works ; should do propper error handling
 
+void mem_write(MEMORY *mem, uint16_t address, byte data)
+{
+    if (mem == NULL)
+        return ;
+    if (address >= mem->size)
+        return ;
+    
+    mem->data[address] = data ;
+}//works ; should do propper error handling
+
 
 #ifdef debug
 void mem_print(MEMORY *mem)

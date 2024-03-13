@@ -40,11 +40,11 @@
 
 //And memory with Accumulator
 #define AND_IMD 0x29
-#define AND_AB 02D
+#define AND_AB 0x2D
 #define AND_XAB 0x3D
 #define AND_YAB 0x39
 #define AND_Z 0x25
-#define ADC_XZ 0x75
+#define AND_XZ 0x35
 #define AND_XZI 0x21
 #define AND_ZIY 0x31
 

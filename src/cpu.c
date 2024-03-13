@@ -28,7 +28,7 @@ err_flag cpu_reset(CPU *cpu, MEMORY *mem)
     cpu->y = 0;
 
     cpu->sp = 0xFD;
-    cpu->p = 0x24; // 00100100
+    cpu->p = 0 ; // 00100100
 
     cpu->pc = mem_read(mem, 0xFFFC) | (mem_read(mem, 0xFFFD) << 8);
     
@@ -61,28 +61,15 @@ err_flag cpu_start(CPU * cpu, MEMORY *mem)
     #ifdef META_DATA
     while (!cpu->ended)
     {
-
-        
-        
-        uint8_t instr = fetch_instruction(cpu, mem);  
-
-        #ifdef debug 
-        if(instr == ADC_XZI){
-        printf("before exec instruction %x " , instr);
-        printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
-        print_cpu(cpu);
-        }
-        #endif
-
+     
+        uint8_t instr = fetch_instruction(cpu, mem); 
 
         exec_instruction(cpu, mem, instr);
 
-        #ifdef debug 
-        if(instr == ADC_XZI){
+        #ifdef debug    
         printf("after exec instruction %x " , instr);
         printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
-        print_cpu(cpu);
-        }
+        print_cpu(cpu);      
         #endif
     }
     #else

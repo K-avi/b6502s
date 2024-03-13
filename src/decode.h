@@ -6,8 +6,8 @@
 #include "memory.h"
 
 
-#define CLEAR_FLAG(cpu, flag) {cpu->p &= ~(flag);}
-#define RAISE_FLAG(cpu, flag) {cpu->p |= (flag);}
+#define CLEAR_FLAG(cpu, flag) {cpu->p &= (byte)~(flag);}
+#define RAISE_FLAG(cpu, flag) {cpu->p |= (byte)(flag);}
 
 #define COND_RAISE_FLAG(cpu, flag, cond) {if(cond){ RAISE_FLAG(cpu, flag);}else {CLEAR_FLAG(cpu, flag);}}
 

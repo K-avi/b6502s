@@ -31,6 +31,7 @@ extern err_flag mem_init(MEMORY *mem, uint32_t size, uint8_t type);
 extern void mem_free(MEMORY *mem);
 
 extern byte mem_read(MEMORY *mem, uint16_t addr);
+extern void mem_write(MEMORY *mem, uint16_t addr, byte data);
 
 #ifdef debug
 extern void mem_print(MEMORY *mem);
