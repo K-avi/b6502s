@@ -7,9 +7,13 @@
 #define RESET_VECTOR_LOW 0xFFFC
 #define RESET_VECTOR_HIGH 0xFFFD
 
+#define INTERRUPT_VECTOR_LOW 0xFFFE
+#define INTERRUPT_VECTOR_HIGH 0xFFFF
+
 #define FCARRY (1<<0) 
 #define FZERO (1<<1)
 #define FINTERRUPT_DISABLE (1<<2)
+#define FINTERRUPT FINTERRUPT_DISABLE
 
 #define FDECIMAL_MODE (1<<3)
 #define FDECIMAL FDECIMAL_MODE
@@ -26,6 +30,8 @@ typedef struct s_reg{
     byte sp; //stack pointer
     uint16_t pc; //program counter
     byte p; //processor status
+
+    byte opcode; //current opcode
 
     #ifdef META_DATA
     uint8_t ended;

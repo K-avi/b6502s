@@ -297,7 +297,7 @@
 #define TYA_IMP 0x98
 
 //Special opcode to indicate the end of the program
-#define META_DIE 0xFF 
+#define META_DIE 0x20 //META DIE :O
 
 //FINALLY ITS OVER FFS 
 #endif 

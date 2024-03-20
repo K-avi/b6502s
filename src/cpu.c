@@ -13,6 +13,7 @@ err_flag cpu_init(CPU *cpu)
     cpu->sp = 0;
     cpu->pc = 0;
     cpu->p = 0 ;
+    cpu->opcode = NOP_IMP ; 
 
     #ifdef META_DATA
     cpu->cycles = 0;
@@ -26,9 +27,10 @@ err_flag cpu_reset(CPU *cpu, MEMORY *mem)
     cpu->a = 0;
     cpu->x = 0;
     cpu->y = 0;
+    cpu->opcode = NOP_IMP;
 
     cpu->sp = 0xFD;
-    cpu->p = 0 ; // 00100100
+    cpu->p = 0 ; // 
 
     cpu->pc = mem_read(mem, 0xFFFC) | (mem_read(mem, 0xFFFD) << 8);
     

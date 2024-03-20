@@ -11,8 +11,6 @@
 
 #define COND_RAISE_FLAG(cpu, flag, cond) {if(cond){ RAISE_FLAG(cpu, flag);}else {CLEAR_FLAG(cpu, flag);}}
 
-typedef void (*instruction_fn)(CPU*, MEMORY* ) ;
-
 extern void exec_instruction(CPU *cpu, MEMORY *mem, byte opcode) ;
 
 #endif 
