@@ -1,11 +1,9 @@
 todo : 
     
     - implement proper error handling
-    - I *could* use macro to create the opcode functions but I think 
-      it's a bad idea 
-    - I *should* however prolly use a single function to set flags and 
-      make the code somewhat less boilerplaty
-
+    - cycle accuracy (handle page crossing and so on)
+    - implement tables for undocummented instructions 
+    - implement undocummented instructions (maybe?)
 
 
 objectives : 

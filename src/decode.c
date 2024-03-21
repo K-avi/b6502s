@@ -382,6 +382,43 @@ void nop(MEMORY * mem, CPU * cpu, byte opcode){
     //do nothing
 }//ok
 
+void ora(MEMORY * mem, CPU * cpu, byte opcode){
+    cpu->a |= mem_read(mem, cur_addr);
+    COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+}//not tested
+
+void pha(MEMORY * mem, CPU * cpu, byte opcode){
+    mem_write(mem, STACK_START + cpu->sp, cpu->a);
+    cpu->sp--;
+}//not tested
+
+void pha(MEMORY * mem, CPU * cpu, byte opcode){
+    mem_write(mem, STACK_START + cpu->sp, cpu->p);
+    cpu->sp--;
+}//not tested
+
+void pla(MEMORY * mem, CPU * cpu, byte opcode){
+    cpu->sp++;
+    cpu->a = mem_read(mem, STACK_START + cpu->sp);
+    COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+}//not tested
+
+void plp(MEMORY * mem, CPU * cpu, byte opcode){
+    cpu->sp++;
+    cpu->p = mem_read(mem, STACK_START + cpu->sp);
+}//not tested
+
+void rol(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done 
+
+void ror(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+
 
 void meta_die(MEMORY * mem, CPU * cpu, byte opcode){
     #ifdef META_DATA
@@ -419,28 +456,30 @@ static instruction_fn optable[256] = {
     [BCC_R] = bcc,
     [BCS_R] = bcs,
 
+
+
     [NOP_IMP] = nop,
 
     [META_DIE] = meta_die ,
 };
 //{
-/*        |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |      */
-//* 0 */      brk_i,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  php,  ora,  asl,  nop,  nop,  ora,  asl,  slo, /* 0 */
-//* 1 */      bpl,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  clc,  ora,  nop,  slo,  nop,  ora,  asl,  slo, /* 1 */
-//* 2 */      jsr,  and,  nop,  rla,  bit,  and,  rol,  rla,  plp,  and,  rol,  nop,  bit,  and,  rol,  rla, /* 2 */
-//* 3 */      bmi,  and,  nop,  rla,  nop,  and,  rol,  rla,  sec,  and,  nop,  rla,  nop,  and,  rol,  rla, /* 3 */
-//* 4 */      rti,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  pha,  eor,  lsr,  nop,  jmp,  eor,  lsr,  sre, /* 4 */
-//* 5 */      bvc,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  cli,  eor,  nop,  sre,  nop,  eor,  lsr,  sre, /* 5 */
-//* 6 */      rts,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  pla,  adc,  ror,  nop,  jmp,  adc,  ror,  rra, /* 6 */
-//* 7 */      bvs,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  sei,  adc,  nop,  rra,  nop,  adc,  ror,  rra, /* 7 */
-//* 8 */      nop,  sta,  nop,  sax,  sty,  sta,  stx,  sax,  dey,  nop,  txa,  nop,  sty,  sta,  stx,  sax, /* 8 */
-//* 9 */      bcc,  sta,  nop,  nop,  sty,  sta,  stx,  sax,  tya,  sta,  txs,  nop,  nop,  sta,  nop,  nop, /* 9 */
-//* A */      ldy,  lda,  ldx,  lax,  ldy,  lda,  ldx,  lax,  tay,  lda,  tax,  nop,  ldy,  lda,  ldx,  lax, /* A */
-//* B */      bcs,  lda,  nop,  lax,  ldy,  lda,  ldx,  lax,  clv,  lda,  tsx,  lax,  ldy,  lda,  ldx,  lax, /* B */
-//* C */      cpy,  cmp,  nop,  dcp,  cpy,  cmp,  dec,  dcp,  iny,  cmp,  dex,  nop,  cpy,  cmp,  dec,  dcp, /* C */
-//* D */      bne,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp,  cld,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp, /* D */
-//* E */      cpx,  sbc,  nop,  isb,  cpx,  sbc,  inc,  isb,  inx,  sbc,  nop,  sbc,  cpx,  sbc,  inc,  isb, /* E */
-//* F */      beq,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb,  sed,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb  /* F */
+/*      |   0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |      */
+//* 0 */ brk_i,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  php,  ora,  asl,  nop,  nop,  ora,  asl,  slo, /* 0 */
+//* 1 */   bpl,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  clc,  ora,  nop,  slo,  nop,  ora,  asl,  slo, /* 1 */
+//* 2 */   jsr,  and,  nop,  rla,  bit,  and,  rol,  rla,  plp,  and,  rol,  nop,  bit,  and,  rol,  rla, /* 2 */
+//* 3 */   bmi,  and,  nop,  rla,  nop,  and,  rol,  rla,  sec,  and,  nop,  rla,  nop,  and,  rol,  rla, /* 3 */
+//* 4 */   rti,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  pha,  eor,  lsr,  nop,  jmp,  eor,  lsr,  sre, /* 4 */
+//* 5 */   bvc,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  cli,  eor,  nop,  sre,  nop,  eor,  lsr,  sre, /* 5 */
+//* 6 */   rts,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  pla,  adc,  ror,  nop,  jmp,  adc,  ror,  rra, /* 6 */
+//* 7 */   bvs,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  sei,  adc,  nop,  rra,  nop,  adc,  ror,  rra, /* 7 */
+//* 8 */   nop,  sta,  nop,  sax,  sty,  sta,  stx,  sax,  dey,  nop,  txa,  nop,  sty,  sta,  stx,  sax, /* 8 */
+//* 9 */   bcc,  sta,  nop,  nop,  sty,  sta,  stx,  sax,  tya,  sta,  txs,  nop,  nop,  sta,  nop,  nop, /* 9 */
+//* A */   ldy,  lda,  ldx,  lax,  ldy,  lda,  ldx,  lax,  tay,  lda,  tax,  nop,  ldy,  lda,  ldx,  lax, /* A */
+//* B */   bcs,  lda,  nop,  lax,  ldy,  lda,  ldx,  lax,  clv,  lda,  tsx,  lax,  ldy,  lda,  ldx,  lax, /* B */
+//* C */   cpy,  cmp,  nop,  dcp,  cpy,  cmp,  dec,  dcp,  iny,  cmp,  dex,  nop,  cpy,  cmp,  dec,  dcp, /* C */
+//* D */   bne,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp,  cld,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp, /* D */
+//* E */   cpx,  sbc,  nop,  isb,  cpx,  sbc,  inc,  isb,  inx,  sbc,  nop,  sbc,  cpx,  sbc,  inc,  isb, /* E */
+//* F */   beq,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb,  sed,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb  /* F */
 //};
 
 
@@ -495,6 +534,27 @@ static const byte nbbytes_table[256] = {
     [NOP_IMP] = 1,
     [META_DIE] = 0,
 };            
+
+//table that takes into account the undocumented instructions
+static const uint32_t bytes_table_undoc[256] = {
+/*        |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |     */
+/* 0 */      1,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* 1 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 1 */
+/* 2 */      3,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 2 */
+/* 3 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 3 */
+/* 4 */      1,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 4 */
+/* 5 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 5 */
+/* 6 */      1,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* 7 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 0 */
+/* 8 */      2,    2,    2,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* 9 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 0 */
+/* A */      2,    2,    2,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* B */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 0 */
+/* C */      2,    2,    2,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* D */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 0 */
+/* E */      2,    2,    2,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
+/* F */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 0 */
+};//done ; should prolly double check
 
 static addressing_fn adressing_table[256] = {
 /*        |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |     */
