@@ -20,5 +20,6 @@ enum {
 
 #define debug
 #define META_DATA
+#define UNDOCUMENTED_OPCODES
 
 #endif 

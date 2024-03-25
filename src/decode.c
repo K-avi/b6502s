@@ -4,16 +4,10 @@
 #include "memory.h"
 #include "opcode.h"
 
+#include <complex.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <sys/types.h>
 
-//file variable to keep track of the current address
-//bc it's easier 
-typedef uint16_t adress_t ; 
-static adress_t cur_addr = 0;
-static bool is_acc = false;
-static bool is_imp = false;
 
 
 //addressing mode functions / instruction functions 
@@ -25,7 +19,6 @@ static addressing_fn adressing_table[256];
 static instruction_fn optable[256];
 static const uint32_t ticktable[256];
 static const byte nbbytes_table[256];
-static addressing_fn adressing_table[256] ;
 
 
 void exec_instruction(CPU *cpu, MEMORY *mem, byte opcode){
@@ -41,7 +34,14 @@ void exec_instruction(CPU *cpu, MEMORY *mem, byte opcode){
     #endif
 }
 
-//addressing mode functions
+
+typedef uint16_t adress_t ; 
+//global file variables to keep track of the current address bc it's easier 
+static adress_t cur_addr = 0;
+//global file variables to checkout wether an instruction is in acc or imp mode
+static bool is_acc = false , is_imp = false;
+
+/****** ADDRESSING MODE FUNCTIONS ******/
 
 //implied
 static void imp(MEMORY * mem, CPU * cpu){
@@ -130,7 +130,7 @@ static void rel(MEMORY * mem, CPU * cpu){
     is_acc = is_imp = false;
 }
 
-//instruction functions
+/****** DOCUMENTED INSTRUCTIONS FUNCTIONS ******/
 
 void adc(MEMORY * mem, CPU * cpu, byte opcode){
     
@@ -393,7 +393,7 @@ void pha(MEMORY * mem, CPU * cpu, byte opcode){
     cpu->sp--;
 }//not tested
 
-void pha(MEMORY * mem, CPU * cpu, byte opcode){
+void php(MEMORY * mem, CPU * cpu, byte opcode){
     mem_write(mem, STACK_START + cpu->sp, cpu->p);
     cpu->sp--;
 }//not tested
@@ -418,6 +418,150 @@ void ror(MEMORY * mem, CPU * cpu, byte opcode){
     
 }//not done
 
+void rti(MEMORY * mem, CPU * cpu, byte opcode){
+ 
+}//not done 
+
+void rts(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sbc(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sec(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sed(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sei(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sta(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void stx(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sty(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void tax(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void tay(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void tsx(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void txa(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void txs(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void tya(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+#ifdef UNDOCUMENTED_OPCODES 
+
+void anc(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void arr(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void asr(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void dcp(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void isc(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void jam(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void las(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void lax(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void rla(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void rra(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sax(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sbx(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sha(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void shs(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void shx(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void shy(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void slo(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void sre(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+void xaa(MEMORY * mem, CPU * cpu, byte opcode){
+    
+}//not done
+
+#else 
+
+
+
+#endif 
+
 
 
 void meta_die(MEMORY * mem, CPU * cpu, byte opcode){
@@ -427,60 +571,26 @@ void meta_die(MEMORY * mem, CPU * cpu, byte opcode){
 }//ok
 
 
-static instruction_fn optable[256] = {
-
-    [ADC_AB] = adc,
-    [ADC_XAB] = adc,
-    [ADC_YAB] = adc,
-    [ADC_IMD] = adc,
-    [ADC_XZI] = adc,
-    [ADC_ZIY] = adc,
-    [ADC_Z] = adc,
-    [ADC_XZ] = adc,
-
-    [AND_AB] = and,
-    [AND_XAB] = and,
-    [AND_YAB] = and,
-    [AND_IMD] = and,
-    [AND_XZI] = and,
-    [AND_ZIY] = and,
-    [AND_Z] = and,
-    [AND_XZ] = and,
-
-    [ASL_AB] = asl,
-    [ASL_XAB] = asl,
-    [ASL_ACC] = asl,
-    [ASL_XZ] = asl,
-    [ASL_Z] = asl,
-
-    [BCC_R] = bcc,
-    [BCS_R] = bcs,
-
-
-
-    [NOP_IMP] = nop,
-
-    [META_DIE] = meta_die ,
-};
-//{
+static instruction_fn optable[256] =
+{
 /*      |   0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |      */
-//* 0 */ brk_i,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  php,  ora,  asl,  nop,  nop,  ora,  asl,  slo, /* 0 */
-//* 1 */   bpl,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  clc,  ora,  nop,  slo,  nop,  ora,  asl,  slo, /* 1 */
-//* 2 */   jsr,  and,  nop,  rla,  bit,  and,  rol,  rla,  plp,  and,  rol,  nop,  bit,  and,  rol,  rla, /* 2 */
-//* 3 */   bmi,  and,  nop,  rla,  nop,  and,  rol,  rla,  sec,  and,  nop,  rla,  nop,  and,  rol,  rla, /* 3 */
-//* 4 */   rti,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  pha,  eor,  lsr,  nop,  jmp,  eor,  lsr,  sre, /* 4 */
-//* 5 */   bvc,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  cli,  eor,  nop,  sre,  nop,  eor,  lsr,  sre, /* 5 */
-//* 6 */   rts,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  pla,  adc,  ror,  nop,  jmp,  adc,  ror,  rra, /* 6 */
-//* 7 */   bvs,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  sei,  adc,  nop,  rra,  nop,  adc,  ror,  rra, /* 7 */
-//* 8 */   nop,  sta,  nop,  sax,  sty,  sta,  stx,  sax,  dey,  nop,  txa,  nop,  sty,  sta,  stx,  sax, /* 8 */
-//* 9 */   bcc,  sta,  nop,  nop,  sty,  sta,  stx,  sax,  tya,  sta,  txs,  nop,  nop,  sta,  nop,  nop, /* 9 */
-//* A */   ldy,  lda,  ldx,  lax,  ldy,  lda,  ldx,  lax,  tay,  lda,  tax,  nop,  ldy,  lda,  ldx,  lax, /* A */
-//* B */   bcs,  lda,  nop,  lax,  ldy,  lda,  ldx,  lax,  clv,  lda,  tsx,  lax,  ldy,  lda,  ldx,  lax, /* B */
-//* C */   cpy,  cmp,  nop,  dcp,  cpy,  cmp,  dec,  dcp,  iny,  cmp,  dex,  nop,  cpy,  cmp,  dec,  dcp, /* C */
-//* D */   bne,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp,  cld,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp, /* D */
-//* E */   cpx,  sbc,  nop,  isb,  cpx,  sbc,  inc,  isb,  inx,  sbc,  nop,  sbc,  cpx,  sbc,  inc,  isb, /* E */
-//* F */   beq,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb,  sed,  sbc,  nop,  isb,  nop,  sbc,  inc,  isb  /* F */
-//};
+/* 0 */ brk_i,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  php,  ora,  asl,  nop,  nop,  ora,  asl,  slo, /* 0 */
+/* 1 */   bpl,  ora,  nop,  slo,  nop,  ora,  asl,  slo,  clc,  ora,  nop,  slo,  nop,  ora,  asl,  slo, /* 1 */
+/* 2 */   jsr,  and,  nop,  rla,  bit,  and,  rol,  rla,  plp,  and,  rol,  nop,  bit,  and,  rol,  rla, /* 2 */
+/* 3 */   bmi,  and,  nop,  rla,  nop,  and,  rol,  rla,  sec,  and,  nop,  rla,  nop,  and,  rol,  rla, /* 3 */
+/* 4 */   rti,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  pha,  eor,  lsr,  nop,  jmp,  eor,  lsr,  sre, /* 4 */
+/* 5 */   bvc,  eor,  nop,  sre,  nop,  eor,  lsr,  sre,  cli,  eor,  nop,  sre,  nop,  eor,  lsr,  sre, /* 5 */
+/* 6 */   rts,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  pla,  adc,  ror,  nop,  jmp,  adc,  ror,  rra, /* 6 */
+/* 7 */   bvs,  adc,  nop,  rra,  nop,  adc,  ror,  rra,  sei,  adc,  nop,  rra,  nop,  adc,  ror,  rra, /* 7 */
+/* 8 */   nop,  sta,  nop,  sax,  sty,  sta,  stx,  sax,  dey,  nop,  txa,  nop,  sty,  sta,  stx,  sax, /* 8 */
+/* 9 */   bcc,  sta,  nop,  nop,  sty,  sta,  stx,  sax,  tya,  sta,  txs,  nop,  nop,  sta,  nop,  nop, /* 9 */
+/* A */   ldy,  lda,  ldx,  lax,  ldy,  lda,  ldx,  lax,  tay,  lda,  tax,  nop,  ldy,  lda,  ldx,  lax, /* A */
+/* B */   bcs,  lda,  nop,  lax,  ldy,  lda,  ldx,  lax,  clv,  lda,  tsx,  lax,  ldy,  lda,  ldx,  lax, /* B */
+/* C */   cpy,  cmp,  nop,  dcp,  cpy,  cmp,  dec,  dcp,  iny,  cmp,  dex,  nop,  cpy,  cmp,  dec,  dcp, /* C */
+/* D */   bne,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp,  cld,  cmp,  nop,  dcp,  nop,  cmp,  dec,  dcp, /* D */
+/* E */   cpx,  sbc,  nop,  isc,  cpx,  sbc,  inc,  isc,  inx,  sbc,  nop,  sbc,  cpx,  sbc,  inc,  isc, /* E */
+/* F */   beq,  sbc,  nop,  isc,  nop,  sbc,  inc,  isc,  sed,  sbc,  nop,  isc,  nop,  sbc,  inc,  isc  /* F */
+};
 
 
 static const uint32_t ticktable[256] = {
@@ -501,43 +611,11 @@ static const uint32_t ticktable[256] = {
 /* D */      2,    5,    2,    8,    4,    4,    6,    6,    2,    4,    2,    7,    4,    4,    7,    7,  /* D */
 /* E */      2,    6,    2,    8,    3,    3,    5,    5,    2,    2,    2,    2,    4,    4,    6,    6,  /* E */
 /* F */      2,    5,    2,    8,    4,    4,    6,    6,    2,    4,    2,    7,    4,    4,    7,    7   /* F */
-};
-
-static const byte nbbytes_table[256] = {
-    [ADC_IMD ] = 2 , 
-    [ADC_AB] = 3,
-    [ADC_XAB] = 3,
-    [ADC_YAB] = 3,
-    [ADC_XZI] = 2,
-    [ADC_ZIY] = 2,
-    [ADC_Z] = 2,
-    [ADC_XZ] = 2,
-
-    [AND_IMD] = 2,
-    [AND_AB] = 3,
-    [AND_XAB] = 3,
-    [AND_YAB] = 3,
-    [AND_XZI] = 2,
-    [AND_ZIY] = 2,
-    [AND_Z] = 2,
-    [AND_XZ] = 2,
-
-    [ASL_AB] = 3,
-    [ASL_XAB] = 3,
-    [ASL_ACC] = 1,
-    [ASL_XZ] = 2,
-    [ASL_Z] = 2,
-
-    [BCC_R] = 2,
-    [BCS_R] = 2,
-
-    [NOP_IMP] = 1,
-    [META_DIE] = 0,
-};            
+};      
 
 //table that takes into account the undocumented instructions
-static const uint32_t bytes_table_undoc[256] = {
-/*        |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |     */
+static const byte nbbytes_table[256] = {
+/*        |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  A  |  B  |  C  |  D  |  E  |  F  |    */
 /* 0 */      1,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 0 */
 /* 1 */      2,    2,    1,    2,    2,    2,    2,    2,    1,    3,    1,    3,    3,    3,    3,    3, /* 1 */
 /* 2 */      3,    2,    1,    2,    2,    2,    2,    2,    1,    2,    1,    2,    3,    3,    3,    3, /* 2 */
