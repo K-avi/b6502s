@@ -6,48 +6,51 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "src/cli.h"
+
 int main(int argc, char **argv)
 {
-
+    
     CPU cpu;
     cpu_init(&cpu);
     MEMORY mem;
 
+    printf("loading memory\n");
     mem_init(&mem, 256, RAM_MEM);
+    mem_load_file(&mem, "refsheet/6502_functional_test.bin");
 
-    byte data[256]; 
-    memset(data, 0, 256);
+    //mem_print(&mem);
 
-    data[0] = ADC_IMD ;
-    data[1] = 0xFF;
+    //printf("Starting CPU\n");
+    //cpu_start(&cpu, &mem, 0x400);
 
-    data[2] = NOP_IMP;
-
-    data[3] = ADC_IMD;
-    data[4] = 0x00;
-
-    data[5] = BCS_R;
-    data[6] = 0xE;
-    data[7] = META_DIE ;
-
-    data[0x15] = ADC_IMD; 
-    data[0x16] = 0x01;
-    data[0x17] = META_DIE ;
-
-
-
-
-
-    
-
-    mem_load(&mem, data, 256);
-
-    cpu_start(&cpu, &mem);
-
+    printf("end of program\n");
     print_cpu(&cpu);
     mem_print(&mem);
 
-    mem_free(&mem);
+    //mem_free(&mem);*/
     //cpu_free(&cpu);
+
+    cli_t cli;
+    cli_init(&cli);
+
+    cpu.x = 255;
+    cpu.a = 255;  
+
+    cli_cpu_print(&cpu, &cli);
+    
+    getch(); 
+
+    cpu.x = 0 ;
+    cpu.a++;
+
+     cli_cpu_print(&cpu, &cli);
+    
+    getch(); 
+
+
+    cli_free(&cli);
+    
+
     return 0;
 }

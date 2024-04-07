@@ -2,9 +2,8 @@
 #include "common.h"
 #include "cpu.h"
 #include "memory.h"
-#include "opcode.h"
 
-#include <complex.h>
+
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -12,7 +11,7 @@
 
 //addressing mode functions / instruction functions 
 typedef void (*addressing_fn)(MEMORY * mem, CPU * cpu);
-typedef void (*instruction_fn)(MEMORY * mem, CPU * cpu, byte opcode);
+typedef void (*instruction_fn)(MEMORY * mem, CPU * cpu);
 
 //declarations for the big tables that are on the bottom of the file
 static addressing_fn adressing_table[256]; 
@@ -25,7 +24,7 @@ void exec_instruction(CPU *cpu, MEMORY *mem, byte opcode){
     //this modifies the global variable cur_addr, is_acc, is_imp
     adressing_table[opcode](mem, cpu);
     //this modifies the cpu struct
-    optable[opcode](mem, cpu, opcode);
+    optable[opcode](mem, cpu);
 
     //this increments the pc and cycles counters
     cpu->pc += nbbytes_table[opcode];
@@ -132,7 +131,7 @@ static void rel(MEMORY * mem, CPU * cpu){
 
 /****** DOCUMENTED INSTRUCTIONS FUNCTIONS ******/
 
-void adc(MEMORY * mem, CPU * cpu, byte opcode){
+void adc(MEMORY * mem, CPU * cpu){
     
     byte cpua_prev = cpu->a;
     cpu->a += mem_read(mem, cur_addr) + (cpu->p & FCARRY);
@@ -156,13 +155,13 @@ void adc(MEMORY * mem, CPU * cpu, byte opcode){
     }
 }//tested ; decimal mode tested
 
-void and(MEMORY * mem, CPU * cpu, byte opcode){
+void and(MEMORY * mem, CPU * cpu){
     cpu->a &= mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
 }//tested
 
-void asl(MEMORY * mem, CPU * cpu, byte opcode){
+void asl(MEMORY * mem, CPU * cpu){
     if(is_acc){
         COND_RAISE_FLAG(cpu, FCARRY, cpu->a & 0x80);
         cpu->a <<= 1;
@@ -178,25 +177,25 @@ void asl(MEMORY * mem, CPU * cpu, byte opcode){
     }
 }//tested
 
-void bcc(MEMORY * mem, CPU * cpu, byte opcode){
+void bcc(MEMORY * mem, CPU * cpu){
     if(!(cpu->p & FCARRY)){
         cpu->pc += cur_addr;
     }
 }//tested
 
-void bcs(MEMORY * mem, CPU * cpu, byte opcode){
+void bcs(MEMORY * mem, CPU * cpu){
     if(cpu->p & FCARRY){
         cpu->pc += cur_addr ;
     }
 }//tested
 
-void beq(MEMORY * mem, CPU * cpu, byte opcode){
+void beq(MEMORY * mem, CPU * cpu){
     if(cpu->p & FZERO){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok)
 
-void bit(MEMORY * mem, CPU * cpu, byte opcode){
+void bit(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, (cpu->a & value) == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, value & 0x80);
@@ -204,26 +203,26 @@ void bit(MEMORY * mem, CPU * cpu, byte opcode){
 }//not tested (should be ok)
 
 //branch minus
-void bmi(MEMORY * mem, CPU * cpu, byte opcode){
+void bmi(MEMORY * mem, CPU * cpu){
     if(cpu->p & FNEGATIVE){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok
 
-void bne(MEMORY * mem, CPU * cpu, byte opcode){
+void bne(MEMORY * mem, CPU * cpu){
     if(!(cpu->p & FZERO)){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok)
 
 //branch plus
-void bpl(MEMORY * mem, CPU * cpu, byte opcode){
+void bpl(MEMORY * mem, CPU * cpu){
     if(!(cpu->p & FNEGATIVE)){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok)
 
-void brk_i(MEMORY * mem, CPU * cpu, byte opcode){
+void brk_i(MEMORY * mem, CPU * cpu){
     cpu->pc += 2;
     mem_write(mem, STACK_START + cpu->sp, cpu->pc >> 8);
     cpu->sp--;
@@ -235,56 +234,56 @@ void brk_i(MEMORY * mem, CPU * cpu, byte opcode){
     cpu->pc = mem_read(mem, INTERRUPT_VECTOR_LOW) | ((mem_read(mem, INTERRUPT_VECTOR_HIGH) << 8) );
 }//not tested
 
-void bvc(MEMORY * mem, CPU * cpu, byte opcode){
+void bvc(MEMORY * mem, CPU * cpu){
     if(!(cpu->p & FOVERFLOW)){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok
 
-void bvs(MEMORY * mem, CPU * cpu, byte opcode){
+void bvs(MEMORY * mem, CPU * cpu){
     if(cpu->p & FOVERFLOW){
         cpu->pc += cur_addr;
     }
 }//not tested (should be ok)
 
-void clc(MEMORY * mem, CPU * cpu, byte opcode){
+void clc(MEMORY * mem, CPU * cpu){
     cpu->p &= ~FCARRY;
 }//not tested (should be ok)
 
-void cld(MEMORY * mem, CPU * cpu, byte opcode){
+void cld(MEMORY * mem, CPU * cpu){
     cpu->p &= ~FDECIMAL;
 }//not tested (should be ok)
 
-void cli(MEMORY * mem, CPU * cpu, byte opcode){
+void cli(MEMORY * mem, CPU * cpu){
     cpu->p &= ~FINTERRUPT;
 }//not tested (should be ok)
 
-void clv(MEMORY * mem, CPU * cpu, byte opcode){
+void clv(MEMORY * mem, CPU * cpu){
     cpu->p &= ~FOVERFLOW;
 }//not tested (should be ok)
 
-void cmp(MEMORY * mem, CPU * cpu, byte opcode){
+void cmp(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FCARRY, cpu->a >= value);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == value);
     COND_RAISE_FLAG(cpu, FNEGATIVE, (cpu->a - value) & 0x80);
 }//not tested (should be ok)
 
-void cpx(MEMORY * mem, CPU * cpu, byte opcode){
+void cpx(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FCARRY, cpu->x >= value);
     COND_RAISE_FLAG(cpu, FZERO, cpu->x == value);
     COND_RAISE_FLAG(cpu, FNEGATIVE, (cpu->x - value) & 0x80);
 }//not tested (should be ok)
 
-void cpy(MEMORY * mem, CPU * cpu, byte opcode){
+void cpy(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FCARRY, cpu->y >= value);
     COND_RAISE_FLAG(cpu, FZERO, cpu->y == value);
     COND_RAISE_FLAG(cpu, FNEGATIVE, (cpu->y - value) & 0x80);
 }//not tested (should be ok)
 
-void dec(MEMORY * mem, CPU * cpu, byte opcode){
+void dec(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     value--;
     mem_write(mem, cur_addr, value);
@@ -292,25 +291,25 @@ void dec(MEMORY * mem, CPU * cpu, byte opcode){
     COND_RAISE_FLAG(cpu, FNEGATIVE, value & 0x80);
 }//not tested (should be ok)
 
-void dex(MEMORY * mem, CPU * cpu, byte opcode){
+void dex(MEMORY * mem, CPU * cpu){
     cpu->x--;
     COND_RAISE_FLAG(cpu, FZERO, cpu->x == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->x & 0x80);
 }//not tested (should be ok)
 
-void dey(MEMORY * mem, CPU * cpu, byte opcode){
+void dey(MEMORY * mem, CPU * cpu){
     cpu->y--;
     COND_RAISE_FLAG(cpu, FZERO, cpu->y == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->y & 0x80);
 }//not tested (should be ok)
 
-void eor(MEMORY * mem, CPU * cpu, byte opcode){
+void eor(MEMORY * mem, CPU * cpu){
     cpu->a ^= mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
 }//not tested (should be ok)
 
-void inc(MEMORY * mem, CPU * cpu, byte opcode){
+void inc(MEMORY * mem, CPU * cpu){
     byte value = mem_read(mem, cur_addr);
     value++;
     mem_write(mem, cur_addr, value);
@@ -318,23 +317,23 @@ void inc(MEMORY * mem, CPU * cpu, byte opcode){
     COND_RAISE_FLAG(cpu, FNEGATIVE, value & 0x80);
 }//not tested (should be ok)
 
-void inx(MEMORY * mem , CPU * cpu , byte opcode){
+void inx(MEMORY * mem , CPU * cpu ){
     cpu->x++;
     COND_RAISE_FLAG(cpu, FZERO, cpu->x == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->x & 0x80);
 }//not tested (should be ok)
 
-void iny(MEMORY * mem, CPU * cpu , byte opcode){
+void iny(MEMORY * mem, CPU * cpu ){
     cpu->y++; 
     COND_RAISE_FLAG(cpu, FZERO, cpu->y == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->y & 0x80);
 }
 
-void jmp(MEMORY * mem, CPU * cpu, byte opcode){
+void jmp(MEMORY * mem, CPU * cpu){
     cpu->pc = cur_addr;
 }//not tested (should be ok
 
-void jsr(MEMORY * mem, CPU * cpu, byte opcode){
+void jsr(MEMORY * mem, CPU * cpu){
     cpu->pc += 2;
     mem_write(mem, STACK_START + cpu->sp, cpu->pc >> 8);
     cpu->sp--;
@@ -343,26 +342,26 @@ void jsr(MEMORY * mem, CPU * cpu, byte opcode){
     cpu->pc = cur_addr;
 }//not tested (should be ok
 
-void lda(MEMORY * mem, CPU * cpu, byte opcode){
+void lda(MEMORY * mem, CPU * cpu){
     cpu->a = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
 }//not tested (should be ok
 
-void ldx(MEMORY * mem, CPU * cpu, byte opcode){
+void ldx(MEMORY * mem, CPU * cpu){
     cpu->x = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->x == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->x & 0x80);
 }//not tested (should be ok)
 
-void ldy(MEMORY * mem, CPU * cpu, byte opcode){
+void ldy(MEMORY * mem, CPU * cpu){
     cpu->y = mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->y == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->y & 0x80);
 }//not tested (should be ok)
 
 
-void lsr(MEMORY * mem , CPU * cpu, byte opcode){
+void lsr(MEMORY * mem , CPU * cpu){
     if(is_acc){
         COND_RAISE_FLAG(cpu, FCARRY, cpu->a & 0x80);
         cpu->a >>= 1;
@@ -378,181 +377,250 @@ void lsr(MEMORY * mem , CPU * cpu, byte opcode){
     }
 }//not tested 
 
-void nop(MEMORY * mem, CPU * cpu, byte opcode){
+void nop(MEMORY * mem, CPU * cpu){
     //do nothing
 }//ok
 
-void ora(MEMORY * mem, CPU * cpu, byte opcode){
+void ora(MEMORY * mem, CPU * cpu){
     cpu->a |= mem_read(mem, cur_addr);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
 }//not tested
 
-void pha(MEMORY * mem, CPU * cpu, byte opcode){
+void pha(MEMORY * mem, CPU * cpu){
     mem_write(mem, STACK_START + cpu->sp, cpu->a);
     cpu->sp--;
 }//not tested
 
-void php(MEMORY * mem, CPU * cpu, byte opcode){
+void php(MEMORY * mem, CPU * cpu){
     mem_write(mem, STACK_START + cpu->sp, cpu->p);
     cpu->sp--;
 }//not tested
 
-void pla(MEMORY * mem, CPU * cpu, byte opcode){
+void pla(MEMORY * mem, CPU * cpu){
     cpu->sp++;
     cpu->a = mem_read(mem, STACK_START + cpu->sp);
     COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
     COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
 }//not tested
 
-void plp(MEMORY * mem, CPU * cpu, byte opcode){
+void plp(MEMORY * mem, CPU * cpu){
     cpu->sp++;
     cpu->p = mem_read(mem, STACK_START + cpu->sp);
 }//not tested
 
-void rol(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done 
+void rol(MEMORY * mem, CPU * cpu){
+    if(is_acc){
+        byte prev = cpu->a;
+        cpu->a = cpu->a << 1 | (cpu->p & FCARRY);
 
-void ror(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+        COND_RAISE_FLAG(cpu, FCARRY, prev & 0x80);
+        COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+        COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+    }else{
+        byte value = mem_read(mem, cur_addr);
+        byte prev = value;
+        value = value << 1 | (cpu->p & FCARRY);
 
-void rti(MEMORY * mem, CPU * cpu, byte opcode){
- 
-}//not done 
+        COND_RAISE_FLAG(cpu, FCARRY, prev & 0x80);
+        COND_RAISE_FLAG(cpu, FZERO, value == 0);
+        COND_RAISE_FLAG(cpu, FNEGATIVE, value & 0x80);
+    }
+}//not tested
 
-void rts(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void ror(MEMORY * mem, CPU * cpu){
+    if(is_acc){
+        byte prev = cpu->a;
+        cpu->a = cpu->a >> 1 | ((cpu->p & FCARRY) << 7);
 
-void sbc(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+        COND_RAISE_FLAG(cpu, FCARRY, prev & 0x01);
+        COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+        COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+    }else{
+        byte value = mem_read(mem, cur_addr);
+        byte prev = value;
+        value = value >> 1 | ((cpu->p & FCARRY) << 7) ;
 
-void sec(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+        COND_RAISE_FLAG(cpu, FCARRY, prev & 0x01);
+        COND_RAISE_FLAG(cpu, FZERO, value == 0);
+        COND_RAISE_FLAG(cpu, FNEGATIVE, value & 0x80);
+    }
+}//not tested
 
-void sed(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void rti(MEMORY * mem, CPU * cpu){
+    cpu->p = mem_read(mem, STACK_START + cpu->sp);
+    cpu->sp++;
+    cpu->pc = mem_read(mem, STACK_START + cpu->sp);
+    cpu->sp++;
+    cpu->pc |= mem_read(mem, STACK_START + cpu->sp) << 8;
+    cpu->sp++;
+}//not tested 
 
-void sei(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void rts(MEMORY * mem, CPU * cpu){
+    cpu->pc = mem_read(mem, STACK_START + cpu->sp);
+    cpu->sp++;
+    cpu->pc |= mem_read(mem, STACK_START + cpu->sp) << 8;
+    cpu->sp++;
+    //increment to return to next instruction
+    cpu->pc++;
+}//not tested
 
-void sta(MEMORY * mem, CPU * cpu, byte opcode){
+void sbc(MEMORY * mem, CPU * cpu){
+    uint16_t temp = cpu->a - mem_read(mem, cur_addr) - (1 - (cpu->p & FCARRY));
     
-}//not done
+    COND_RAISE_FLAG(cpu, FCARRY, temp < 0x100);
+    COND_RAISE_FLAG(cpu, FZERO, (temp & 0xFF) == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, temp & 0x80);
+    COND_RAISE_FLAG(cpu, FOVERFLOW, ((cpu->a ^ temp) & 0x80) && ((cpu->a ^ mem_read(mem, cur_addr)) & 0x80));
 
-void stx(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+    if(cpu->p & FDECIMAL){
+        temp -= 0x60;
+        if((cpu->a & 0x0F) < (mem_read(mem, cur_addr) & 0x0F) + (1 - (cpu->p & FCARRY))){
+            temp -= 0x06;
+        }
+        if(temp > 0x99){
+            temp -= 0x60;
+            COND_RAISE_FLAG(cpu, FCARRY, 1);
+        }else{
+            COND_RAISE_FLAG(cpu, FCARRY, 0);
+        }
+    }
 
-void sty(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+}//not tested
 
-void tax(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void sec(MEMORY * mem, CPU * cpu){
+    COND_RAISE_FLAG(cpu, FCARRY, 1);
+}//not tested
 
-void tay(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void sed(MEMORY * mem, CPU * cpu){
+    COND_RAISE_FLAG(cpu, FDECIMAL, 1);
+}//not tested
 
-void tsx(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void sei(MEMORY * mem, CPU * cpu){
+    COND_RAISE_FLAG(cpu, FINTERRUPT, 1);
+}//not tested
 
-void txa(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void sta(MEMORY * mem, CPU * cpu){
+    mem_write(mem, cur_addr, cpu->a);
+}//not tested
 
-void txs(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void stx(MEMORY * mem, CPU * cpu){
+    mem_write(mem, cur_addr, cpu->x);
+}//not tested
 
-void tya(MEMORY * mem, CPU * cpu, byte opcode){
-    
-}//not done
+void sty(MEMORY * mem, CPU * cpu){
+    mem_write(mem, cur_addr, cpu->y);
+}//not tested
+
+void tax(MEMORY * mem, CPU * cpu){
+    cpu->x = cpu->a;
+    COND_RAISE_FLAG(cpu, FZERO, cpu->x == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->x & 0x80);
+}//not tested
+
+void tay(MEMORY * mem, CPU * cpu){
+    cpu->y = cpu->a;
+    COND_RAISE_FLAG(cpu, FZERO, cpu->y == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->y & 0x80);
+}//not tested
+
+void tsx(MEMORY * mem, CPU * cpu){
+    cpu->x = cpu->sp;
+    COND_RAISE_FLAG(cpu, FZERO, cpu->x == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->x & 0x80);
+}//not tested
+
+void txa(MEMORY * mem, CPU * cpu){
+    cpu->a = cpu->x;
+    COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+}//not tested
+
+void txs(MEMORY * mem, CPU * cpu){
+    cpu->sp = cpu->x;
+}//not tested
+
+void tya(MEMORY * mem, CPU * cpu){
+    cpu->a = cpu->y;
+    COND_RAISE_FLAG(cpu, FZERO, cpu->a == 0);
+    COND_RAISE_FLAG(cpu, FNEGATIVE, cpu->a & 0x80);
+}//not tested
 
 #ifdef UNDOCUMENTED_OPCODES 
 
-void anc(MEMORY * mem, CPU * cpu, byte opcode){
+void anc(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void arr(MEMORY * mem, CPU * cpu, byte opcode){
+void arr(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void asr(MEMORY * mem, CPU * cpu, byte opcode){
+void asr(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void dcp(MEMORY * mem, CPU * cpu, byte opcode){
+void dcp(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void isc(MEMORY * mem, CPU * cpu, byte opcode){
+void isc(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void jam(MEMORY * mem, CPU * cpu, byte opcode){
+void jam(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void las(MEMORY * mem, CPU * cpu, byte opcode){
+void las(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void lax(MEMORY * mem, CPU * cpu, byte opcode){
+void lax(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void rla(MEMORY * mem, CPU * cpu, byte opcode){
+void rla(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void rra(MEMORY * mem, CPU * cpu, byte opcode){
+void rra(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void sax(MEMORY * mem, CPU * cpu, byte opcode){
+void sax(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void sbx(MEMORY * mem, CPU * cpu, byte opcode){
+void sbx(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void sha(MEMORY * mem, CPU * cpu, byte opcode){
+void sha(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void shs(MEMORY * mem, CPU * cpu, byte opcode){
+void shs(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void shx(MEMORY * mem, CPU * cpu, byte opcode){
+void shx(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void shy(MEMORY * mem, CPU * cpu, byte opcode){
+void shy(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void slo(MEMORY * mem, CPU * cpu, byte opcode){
+void slo(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void sre(MEMORY * mem, CPU * cpu, byte opcode){
+void sre(MEMORY * mem, CPU * cpu){
     
 }//not done
 
-void xaa(MEMORY * mem, CPU * cpu, byte opcode){
+void xaa(MEMORY * mem, CPU * cpu){
     
 }//not done
 
@@ -564,7 +632,7 @@ void xaa(MEMORY * mem, CPU * cpu, byte opcode){
 
 
 
-void meta_die(MEMORY * mem, CPU * cpu, byte opcode){
+void meta_die(MEMORY * mem, CPU * cpu){
     #ifdef META_DATA
     cpu->ended = 1;
     #endif

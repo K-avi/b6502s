@@ -22,7 +22,7 @@ err_flag cpu_init(CPU *cpu)
     return ERR_OK;
 }//simple enough
 
-err_flag cpu_reset(CPU *cpu, MEMORY *mem)
+err_flag cpu_reset(CPU *cpu, MEMORY *mem, uint16_t start_address)
 {
     cpu->a = 0;
     cpu->x = 0;
@@ -53,25 +53,28 @@ uint8_t fetch_instruction(CPU *cpu, MEMORY *mem)
 void print_cpu(CPU *cpu);
 #endif
 
-err_flag cpu_start(CPU * cpu, MEMORY *mem)
+err_flag cpu_start(CPU * cpu, MEMORY *mem, uint16_t start_address)
 {
     if (cpu == NULL || mem == NULL)
         return ERR_NULL;
     
-    cpu_reset(cpu, mem);
+    cpu_reset(cpu, mem, start_address);
     
     #ifdef META_DATA
+    uint16_t nb_i = 0;
     while (!cpu->ended)
     {
-     
+        
         uint8_t instr = fetch_instruction(cpu, mem); 
 
         exec_instruction(cpu, mem, instr);
 
-        #ifdef debug    
-        printf("after exec instruction %x " , instr);
-        printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
-        print_cpu(cpu);      
+        #ifdef debug  
+        if(!nb_i++){            
+            printf("after exec instruction %x " , instr);
+            printf("cpu.a %x, %d\n" , cpu->a, cpu->a);
+            print_cpu(cpu); 
+        }     
         #endif
     }
     #else

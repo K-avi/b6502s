@@ -1,8 +1,15 @@
 todo : 
+
+    - debug instructions (I'd need proper stop / start exec and I/O handling and stuff)
+      in order to do that I'll implement the ncurses interface first to make debugging 
+      more pleasant (and bc I wanna do it :O  )
+
+    - in order to make the simulator cooler and better I'll implement an NCURSES 
+      interface to navigate it. This is gonna take a while tbh but it makes the 
+      project much more interresting. 
     
     - implement proper error handling
     - cycle accuracy (handle page crossing and so on)
-    - implement tables for undocummented instructions 
     - implement undocummented instructions (maybe?)
 
 

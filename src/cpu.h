@@ -40,8 +40,8 @@ typedef struct s_reg{
 }CPU;
 
 extern err_flag cpu_init(CPU *cpu);
-extern err_flag cpu_reset(CPU *cpu, MEMORY *mem);
-extern err_flag cpu_start(CPU * cpu, MEMORY *mem);
+extern err_flag cpu_reset(CPU *cpu, MEMORY *mem, uint16_t start_addr);
+extern err_flag cpu_start(CPU * cpu, MEMORY *mem, uint16_t start_addr);
 
 #ifdef debug 
 extern void print_cpu(CPU *cpu);

@@ -20,7 +20,7 @@
 
 typedef struct s_mem{
     byte *data ; 
-    uint16_t size ;
+    uint32_t size ;
 
     uint8_t type ;
 }MEMORY ; 
@@ -36,6 +36,8 @@ extern void mem_write(MEMORY *mem, uint16_t addr, byte data);
 #ifdef debug
 extern void mem_print(MEMORY *mem);
 extern void mem_load(MEMORY *mem, byte *data, uint32_t size);
+extern void mem_load_file(MEMORY *mem, char *filename);
+
 #endif
 
 #endif

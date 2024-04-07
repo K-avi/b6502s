@@ -79,7 +79,7 @@ void mem_print(MEMORY *mem)
     printf("\n");
 }
 
-void mem_load(MEMORY *mem, byte *data, uint32_t size)
+void mem_load_buffer(MEMORY *mem, byte *data, uint32_t size)
 {//highly unsafe
     if(mem->data)
         free(mem->data) ;
@@ -89,4 +89,26 @@ void mem_load(MEMORY *mem, byte *data, uint32_t size)
     mem->size = size ;
  
 }//debug helper please do not use it 
+
+void mem_load_file(MEMORY *mem, char *filename)
+{
+    FILE *file = fopen(filename, "rb") ;
+    if (file == NULL){
+        printf("could not open file %s\n", filename) ;
+        return ;
+    }
+    
+    fseek(file, 0, SEEK_END) ;
+    uint32_t size = ftell(file) ;
+    fseek(file, 0, SEEK_SET) ;
+
+    if(mem->data)
+        free(mem->data) ;
+
+    mem->data = (byte *)malloc(size*sizeof(byte)) ;
+    fread(mem->data, sizeof(byte), size, file) ;
+    mem->size = size ;
+    
+    fclose(file) ;
+}//debug helper please do not use it
 #endif
